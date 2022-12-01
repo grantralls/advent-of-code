@@ -1,0 +1,21 @@
+{
+  "name": "day-1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsx index.ts"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tsx": "^3.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.10",
+    "prettier": "^2.8.0"
+  }
+}
