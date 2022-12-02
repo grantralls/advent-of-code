@@ -3,6 +3,7 @@ import {
     DesiredResult,
     myChoiceMapper,
     opponentChoiceMapper,
+    Choice,
 } from './game-logic';
 
 readFile('src/input.txt', 'utf-8').then((data) => {
@@ -51,13 +52,13 @@ const playGamePartTwo = (gameData: Array<Array<string>>) => {
 
         if (desiredResult === 'Win') {
             const myChoice = opponentChoice.loosesAgainst;
-            totalScore += 6 + (myChoice?.pointValue || 0);
+            totalScore += 6 + myChoice.pointValue;
         } else if (desiredResult === 'Lose') {
             const myChoice = opponentChoice.winsAgainst;
-            totalScore += myChoice?.pointValue || 0;
+            totalScore += myChoice.pointValue;
         } else if (desiredResult === 'Draw') {
             const myChoice = opponentChoice;
-            totalScore += 3 + (myChoice?.pointValue || 0);
+            totalScore += 3 + myChoice.pointValue;
         }
     });
 

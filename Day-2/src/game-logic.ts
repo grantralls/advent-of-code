@@ -1,7 +1,7 @@
 // Opportunities for refactoring:
 //  1. Use classes instead of objects for syntactic sugar
 
-type Choice = {
+export type Choice = {
     value: string;
     pointValue: number;
     winsAgainst: Partial<Choice>;
