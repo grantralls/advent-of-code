@@ -32,8 +32,8 @@ const playGamePartOne = (gameData: Array<Array<string>>) => {
             totalScore += 3;
         } else if (myChoice.winsAgainst?.value === opponentChoice.value) {
             totalScore += 6;
-        } else if (myChoice.loosesAgainst?.value === opponentChoice.value) {
         }
+
         totalScore += myChoice.pointValue || 0;
     });
 
