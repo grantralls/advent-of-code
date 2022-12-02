@@ -3,7 +3,6 @@ import {
     DesiredResult,
     myChoiceMapper,
     opponentChoiceMapper,
-    Choice,
 } from './game-logic';
 
 readFile('src/input.txt', 'utf-8').then((data) => {
