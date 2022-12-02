@@ -1,7 +1,7 @@
-import { readFile } from "fs/promises";
-import { parseInput, sortByTotalCaloriesDescending } from "./utils";
+import { readFile } from 'fs/promises';
+import { parseInput, sortByTotalCaloriesDescending } from './utils';
 
-readFile("src/input.txt", "utf-8")
+readFile('src/input.txt', 'utf-8')
     .then((data) => {
         const elves = parseInput(data);
         const sortedElves = sortByTotalCaloriesDescending(elves);
