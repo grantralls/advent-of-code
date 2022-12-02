@@ -14,17 +14,17 @@ export enum DesiredResult {
     Z = 'Win',
 }
 
-export const Rock: Partial<Choice> = {
+const Rock: Partial<Choice> = {
     value: 'Rock',
     pointValue: 1,
 };
 
-export const Paper: Partial<Choice> = {
+const Paper: Partial<Choice> = {
     value: 'Paper',
     pointValue: 2,
 };
 
-export const Scissors: Partial<Choice> = {
+const Scissors: Partial<Choice> = {
     value: 'Scissors',
     pointValue: 3,
 };
