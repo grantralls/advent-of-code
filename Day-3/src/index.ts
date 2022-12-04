@@ -12,7 +12,7 @@ readFile('src/input.txt', 'utf-8').then((data) => {
         getPriorityTotalOfBadlyOrganizedItems(rucksacks);
     console.log(`Answer 1 ${totalPriorityValueOfBadlyOrganizedItems}`);
 
-    const badeValueSumOfAllElves =
+    const badgeValueSumOfAllElves =
         getTotalBadgePrioritiesFromAllElves(rucksacks);
-    console.log(`Answer 2: ${badeValueSumOfAllElves}`);
+    console.log(`Answer 2: ${badgeValueSumOfAllElves}`);
 });
