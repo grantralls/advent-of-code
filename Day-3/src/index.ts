@@ -66,7 +66,7 @@ const getValueOfCharacter = (character: string) => {
 
 const getBadgePriority = (elfGroup: string[]) => {
     // Create a set for each elf that contains the unique items each elf has
-    let instancesList = [];
+    let listOfFoodItemSets = [];
 
     elfGroup.forEach((rucksack) => {
         const setOfItems = new Set();
@@ -77,13 +77,16 @@ const getBadgePriority = (elfGroup: string[]) => {
                 setOfItems.add(item);
             }
         });
-        instancesList.push(setOfItems);
+        listOfFoodItemSets.push(setOfItems);
     });
 
     // Find which item has present in the bag of all three elves and retrieve the priority level
     let badgeValueSum = 0;
-    instancesList[0].forEach((foodItem) => {
-        if (instancesList[1].has(foodItem) && instancesList[2].has(foodItem)) {
+    listOfFoodItemSets[0].forEach((foodItem) => {
+        if (
+            listOfFoodItemSets[1].has(foodItem) &&
+            listOfFoodItemSets[2].has(foodItem)
+        ) {
             badgeValueSum += getValueOfCharacter(foodItem);
         }
     });
