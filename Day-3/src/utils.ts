@@ -33,7 +33,7 @@ const getPrioritiesOfDuplicatesWithinRucksack = (rucksack: string) => {
             !checkedFoodItems.has(foodItem) &&
             compartmentB.includes(foodItem)
         ) {
-            totalPriority += getValueOfCharacter(foodItem);
+            totalPriority += getValueOfFoodItem(foodItem);
             checkedFoodItems.add(foodItem);
         }
     });
@@ -71,19 +71,19 @@ const getBadgePriorityFromElfGroup = (elfGroup: string[]) => {
 
     // Find which item has present in the bag of all three elves and retrieve the priority level
     let badgeValueSum = 0;
-    listOfFoodItemSets[0].forEach((foodItem) => {
+    listOfFoodItemSets[0].forEach((foodItem: string) => {
         if (
             listOfFoodItemSets[1].has(foodItem) &&
             listOfFoodItemSets[2].has(foodItem)
         ) {
-            badgeValueSum += getValueOfCharacter(foodItem);
+            badgeValueSum += getValueOfFoodItem(foodItem);
         }
     });
 
     return badgeValueSum;
 };
 
-const getValueOfCharacter = (character: string) => {
+const getValueOfFoodItem = (character: string) => {
     if (character === character.toUpperCase()) {
         return character.charCodeAt(0) - 38;
     } else {
