@@ -2,22 +2,16 @@ import { readFile } from 'fs/promises';
 
 readFile('src/input.txt', 'utf-8').then((data) => {
     const rucksacks = parseInput(data);
-    console.log(`Answer 1 ${getPriorityTotal(rucksacks)}`);
+    console.log(`Answer 1 ${getPriorityTotalOfBadlyOrganizedItems(rucksacks)}`);
 
-    let badgeValueSum = 0;
-
-    // Loop through the data set in groups of 3
-    for (let i = 2; i <= rucksacks.length; i += 3) {
-        const elfGroup = rucksacks.slice(i - 2, i + 1);
-        badgeValueSum += getBadgePriority(elfGroup);
-    }
-
-    console.log(`Answer 2: ${badgeValueSum}`);
+    const badeValueSumOfAllElves =
+        getTotalBadgePrioritiesFromAllElves(rucksacks);
+    console.log(`Answer 2: ${badeValueSumOfAllElves}`);
 });
 
 const parseInput = (data: string) => data.split('\n');
 
-const getPriorityTotal = (rucksackList: string[]) => {
+const getPriorityTotalOfBadlyOrganizedItems = (rucksackList: string[]) => {
     let total = 0;
 
     rucksackList.forEach((rucksack) => {
@@ -56,15 +50,19 @@ const getPrioritiesOfDuplicatesWithinRucksack = (rucksack: string) => {
     return totalPriority;
 };
 
-const getValueOfCharacter = (character: string) => {
-    if (character === character.toUpperCase()) {
-        return character.charCodeAt(0) - 38;
-    } else {
-        return character.charCodeAt(0) - 96;
+const getTotalBadgePrioritiesFromAllElves = (rucksackList: string[]) => {
+    let badgeValueSum = 0;
+
+    // Loop through the data set in groups of 3
+    for (let i = 2; i <= rucksackList.length; i += 3) {
+        const elfGroup = rucksackList.slice(i - 2, i + 1);
+        badgeValueSum += getBadgePriorityFromElfGroup(elfGroup);
     }
+
+    return badgeValueSum;
 };
 
-const getBadgePriority = (elfGroup: string[]) => {
+const getBadgePriorityFromElfGroup = (elfGroup: string[]) => {
     // Create a set for each elf that contains the unique items each elf has
     let listOfFoodItemSets = [];
 
@@ -92,4 +90,12 @@ const getBadgePriority = (elfGroup: string[]) => {
     });
 
     return badgeValueSum;
+};
+
+const getValueOfCharacter = (character: string) => {
+    if (character === character.toUpperCase()) {
+        return character.charCodeAt(0) - 38;
+    } else {
+        return character.charCodeAt(0) - 96;
+    }
 };
