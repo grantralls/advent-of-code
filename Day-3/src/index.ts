@@ -2,7 +2,10 @@ import { readFile } from 'fs/promises';
 
 readFile('src/input.txt', 'utf-8').then((data) => {
     const rucksacks = parseInput(data);
-    console.log(`Answer 1 ${getPriorityTotalOfBadlyOrganizedItems(rucksacks)}`);
+
+    const totalPriorityValueOfBadlyOrganizedItems =
+        getPriorityTotalOfBadlyOrganizedItems(rucksacks);
+    console.log(`Answer 1 ${totalPriorityValueOfBadlyOrganizedItems}`);
 
     const badeValueSumOfAllElves =
         getTotalBadgePrioritiesFromAllElves(rucksacks);
