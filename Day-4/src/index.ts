@@ -38,6 +38,7 @@ const parseData = (data: string): ElfGroup[] => {
             delta: elfBMax - elfBMin,
         };
 
+        // Sorting the elves so the elf with the largest delta is first
         const unsortedResult = [elfA, elfB];
         const sortedResult = unsortedResult.sort((a, b) => b.delta - a.delta);
 
