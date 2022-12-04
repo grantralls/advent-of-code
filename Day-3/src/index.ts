@@ -29,21 +29,27 @@ const getPriorityTotal = (rucksackList: string[]) => {
 };
 
 const getPrioritiesOfDuplicatesWithinRucksack = (rucksack: string) => {
+    // Split the rucksack into the 2 compartments
     const compartmentA = rucksack.slice(0, rucksack.length / 2);
     const compartmentB = rucksack.slice(rucksack.length / 2, rucksack.length);
 
+    // prep compartment A to easily loop over it
     const splitCompartment = compartmentA.split('');
 
     let totalPriority = 0;
-    const checkedCharacters = new Set();
 
-    splitCompartment.forEach((character) => {
+    // A specific character in compartment A should only ever get checked once
+    // if compartment A has two "H"s and compartment B has a single H we
+    // want that to count for a single match, not two matches
+    const checkedFoodItems = new Set();
+
+    splitCompartment.forEach((foodItem) => {
         if (
-            !checkedCharacters.has(character) &&
-            compartmentB.includes(character)
+            !checkedFoodItems.has(foodItem) &&
+            compartmentB.includes(foodItem)
         ) {
-            totalPriority += getValueOfCharacter(character);
-            checkedCharacters.add(character);
+            totalPriority += getValueOfCharacter(foodItem);
+            checkedFoodItems.add(foodItem);
         }
     });
 
@@ -58,30 +64,29 @@ const getValueOfCharacter = (character: string) => {
     }
 };
 
-const getBadgePriority = (input: string[]) => {
+const getBadgePriority = (elfGroup: string[]) => {
+    // Create a set for each elf that contains the unique items each elf has
     let instancesList = [];
 
-    input.forEach((value) => {
-        let instancesOfChar = {};
-        const splitValue = value.split('');
+    elfGroup.forEach((rucksack) => {
+        const setOfItems = new Set();
+        const splitValue = rucksack.split('');
 
-        splitValue.forEach((character) => {
-            if (instancesOfChar[character] === undefined) {
-                instancesOfChar[character] = 1;
-            } else {
-                instancesOfChar[character] += 1;
+        splitValue.forEach((item) => {
+            if (!setOfItems.has(item)) {
+                setOfItems.add(item);
             }
         });
-        instancesList.push(instancesOfChar);
+        instancesList.push(setOfItems);
     });
 
+    // Find which item has present in the bag of all three elves and retrieve the priority level
     let badgeValueSum = 0;
-
-    for (const item in instancesList[0]) {
-        if (instancesList[1][item] && instancesList[2][item]) {
-            badgeValueSum += getValueOfCharacter(item);
+    instancesList[0].forEach((foodItem) => {
+        if (instancesList[1].has(foodItem) && instancesList[2].has(foodItem)) {
+            badgeValueSum += getValueOfCharacter(foodItem);
         }
-    }
+    });
 
     return badgeValueSum;
 };
