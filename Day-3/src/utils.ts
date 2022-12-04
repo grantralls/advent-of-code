@@ -33,7 +33,7 @@ const getPrioritiesOfDuplicatesWithinRucksack = (rucksack: string) => {
             !checkedFoodItems.has(foodItem) &&
             compartmentB.includes(foodItem)
         ) {
-            totalPriority += getValueOfFoodItem(foodItem);
+            totalPriority += getPriorityOfFoodItem(foodItem);
             checkedFoodItems.add(foodItem);
         }
     });
@@ -76,14 +76,14 @@ const getBadgePriorityFromElfGroup = (elfGroup: string[]) => {
             listOfFoodItemSets[1].has(foodItem) &&
             listOfFoodItemSets[2].has(foodItem)
         ) {
-            badgeValueSum += getValueOfFoodItem(foodItem);
+            badgeValueSum += getPriorityOfFoodItem(foodItem);
         }
     });
 
     return badgeValueSum;
 };
 
-const getValueOfFoodItem = (character: string) => {
+const getPriorityOfFoodItem = (character: string) => {
     if (character === character.toUpperCase()) {
         return character.charCodeAt(0) - 38;
     } else {
