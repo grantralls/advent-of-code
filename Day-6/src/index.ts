@@ -10,26 +10,15 @@ readFile('src/input.txt', 'utf-8').then((data) => {
 });
 
 const getStartOfIndex = (datastream: string[], numberOfUniqueValues: number) =>
-    datastream.reduce(
-        (
-            acc: number,
-            _: string,
-            currentIndex: number,
-            datastream: string[]
-        ) => {
-            const arrayToCheck = datastream.slice(
-                currentIndex,
-                currentIndex + numberOfUniqueValues
-            );
+    datastream.reduce((acc: number, _: string, currentIndex: number, datastream: string[]) => {
+        const arrayToCheck = datastream.slice(currentIndex, currentIndex + numberOfUniqueValues);
 
-            const mySet = new Set(arrayToCheck);
+        const mySet = new Set(arrayToCheck);
 
-            if (mySet.size === numberOfUniqueValues) {
-                datastream.splice(1);
-                return currentIndex + numberOfUniqueValues;
-            }
+        if (mySet.size === numberOfUniqueValues) {
+            datastream.splice(1);
+            return currentIndex + numberOfUniqueValues;
+        }
 
-            return acc;
-        },
-        0
-    );
+        return acc;
+    }, 0);
