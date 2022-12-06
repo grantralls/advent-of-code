@@ -7,6 +7,7 @@ import {
 
 readFile('src/input.txt', 'utf-8').then((data) => {
     const games = parseInput(data);
+
     const firstScore = playGamePartOne(games);
     console.log(`Answer 1: ${firstScore}`);
 
