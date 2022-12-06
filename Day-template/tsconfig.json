@@ -1,6 +1,8 @@
 {
-  "compilerOptions": {
-    "strict": true,
-    "types": ["node"]
-  }
+    "compilerOptions": {
+        "strict": true,
+        "types": ["node"],
+        "sourceMap": true,
+        "outDir": "./dist"
+    }
 }
