@@ -1,3 +1,4 @@
-import { returnToSender } from './utils/utils';
+import { solution } from './utils/utils';
+import { readFile } from 'fs/promises';
 
-console.log(returnToSender('Hello'));
+readFile('src/input.txt', 'utf8').then(solution);
