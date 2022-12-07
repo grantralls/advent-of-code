@@ -6,7 +6,7 @@ _written in Typescript using Node_
 
 _tests written with Jest_
 
-Each solution has a utils folder which contains `utils.ts`, `utils.test.ts`, and possible some test input. `utils.ts` contains the utility/helper functions used in the final solution. No tests are written for `index.ts` therefore the vast majority of the logic lives in a utils function and is tested there.
+Each solution has a utils folder which contains `utils.ts`, `utils.test.ts`, and possibly some test input. `utils.ts` contains the utility/helper functions used in the final solution. No tests are written for `index.ts` therefore the vast majority of the logic lives in a utils function and is tested there.
 
 1. Install [nvm](https://github.com/nvm-sh/nvm)
 2. Use the terminal to navigate to the root folder of this repo
