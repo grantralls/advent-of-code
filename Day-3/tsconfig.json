@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "types": ["node"]
+      "strict": true,
+      "types": ["node", "jest"],
+      "sourceMap": true,
+      "outDir": "./dist",
+      "esModuleInterop": true
   }
 }
