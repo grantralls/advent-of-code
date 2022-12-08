@@ -9,8 +9,25 @@ import {
     Directory,
     changeDirectory,
     setDirectorySize,
+    getDirectoriesWithSizeSmallerThanMax,
+    flattenAndSortDirectories,
+    solution,
 } from './utils';
 import { readFileSync } from 'fs';
+
+describe('examples', () => {
+    const consoleSpy = jest.spyOn(console, 'log');
+    const data = readFileSync('src/utils/example-input.txt', 'utf8');
+    solution(data);
+
+    it('should return 95437 for part one', () => {
+        expect(consoleSpy).toHaveBeenCalledWith('Answer 1: ', 95437);
+    });
+
+    it('should return 95437 for part one', () => {
+        expect(consoleSpy).toHaveBeenCalledWith('Answer 2: ', 24933642);
+    });
+});
 
 describe('isCommand', () => {
     it('should return undefined if the string is not a command', () => {
@@ -173,5 +190,163 @@ describe('getDirectorySize', () => {
         expect(results).toEqual(40);
         expect(currentDirectory.size).toEqual(40);
         expect((currentDirectory.contents as Directory[])[1].size).toEqual(30);
+    });
+});
+
+describe('setDirectorySize', () => {
+    it('should add file sizes within current directory', () => {
+        const currentDirectory = createDirectory('someDir', null, null, [
+            {
+                name: 'a.txt',
+                size: 10,
+            },
+            {
+                name: 'b.txt',
+                size: 20,
+            },
+        ]);
+
+        setDirectorySize(currentDirectory);
+        expect(currentDirectory.size).toEqual(30);
+    });
+
+    it('should add file sizes within sub directory', () => {
+        const currentDirectory = createDirectory('someDir', null, null, [
+            {
+                name: 'a.txt',
+                size: 10,
+            },
+            {
+                name: 'a',
+                parentDirectory: null,
+                size: null,
+                contents: [
+                    {
+                        name: 'b.txt',
+                        size: 30,
+                    },
+                ],
+            },
+        ]);
+
+        setDirectorySize(currentDirectory);
+
+        expect(currentDirectory.size).toEqual(40);
+        expect((currentDirectory.contents as Directory[])[1].size).toEqual(30);
+    });
+});
+
+describe('getDirectoriesWithSizeSmallerThanMax', () => {
+    const directory = createDirectory('someDir', null, 70, [
+        {
+            name: 'a',
+            parentDirectory: null,
+            size: 30,
+            contents: [
+                {
+                    name: 'b.txt',
+                    size: 30,
+                },
+            ],
+        },
+        {
+            name: 'b.txt',
+            size: 40,
+        },
+    ]);
+
+    it('should return the directory with the max size when the parent is not included', () => {
+        const results = getDirectoriesWithSizeSmallerThanMax(directory, 40);
+
+        expect(results).toEqual([
+            {
+                name: 'a',
+                parentDirectory: null,
+                size: 30,
+                contents: [
+                    {
+                        name: 'b.txt',
+                        size: 30,
+                    },
+                ],
+            },
+        ]);
+    });
+
+    it('should include the parent if it falls within the limit', () => {
+        const results = getDirectoriesWithSizeSmallerThanMax(directory, 70);
+
+        expect(results).toEqual([
+            {
+                name: 'a',
+                parentDirectory: null,
+                size: 30,
+                contents: [
+                    {
+                        name: 'b.txt',
+                        size: 30,
+                    },
+                ],
+            },
+            {
+                contents: [
+                    {
+                        contents: [
+                            {
+                                name: 'b.txt',
+                                size: 30,
+                            },
+                        ],
+                        name: 'a',
+                        parentDirectory: null,
+                        size: 30,
+                    },
+                    {
+                        name: 'b.txt',
+                        size: 40,
+                    },
+                ],
+                name: 'someDir',
+                parentDirectory: null,
+                size: 70,
+            },
+        ]);
+    });
+});
+
+describe('flattenAndSortDirectories', () => {
+    it('should flatten the directory', () => {
+        const directory = createDirectory('someDir', null, 70, [
+            {
+                name: 'a',
+                parentDirectory: null,
+                size: 30,
+                contents: [
+                    {
+                        name: 'b.txt',
+                        size: 30,
+                    },
+                ],
+            },
+            {
+                name: 'b.txt',
+                size: 40,
+            },
+        ]);
+
+        const results = flattenAndSortDirectories(directory);
+
+        expect(results).toEqual([
+            {
+                contents: [
+                    { contents: [{ name: 'b.txt', size: 30 }], name: 'a', parentDirectory: null, size: 30 },
+                    { name: 'b.txt', size: 40 },
+                ],
+                name: 'someDir',
+                parentDirectory: null,
+                size: 70,
+            },
+            { contents: [{ name: 'b.txt', size: 30 }], name: 'a', parentDirectory: null, size: 30 },
+        ]);
     });
 });

@@ -7,9 +7,11 @@ export const solution = (data: string) => {
     executeCommands(root, streamList);
 
     setDirectorySize(root);
-    console.log(getTotalSizeOfDirectoriesUnderMaxSize(root, 100000));
+    console.log('Answer 1: ', getTotalSizeOfDirectoriesUnderMaxSize(root, 100000));
 
-    console.log(findDirectoryToRemove(root).size);
+    const results = findDirectoryToRemove(root);
+
+    console.log('Answer 2: ', results ? results.size : 0);
 };
 
 export type File = {
@@ -36,14 +38,12 @@ type StreamLocation = {
 
 export const parseInput = (stream: string) => stream.split('\n');
 
+// TODO: write tests
 export const findDirectoryToRemove = (directory: Directory) => {
     const directories = flattenAndSortDirectories(directory).reverse();
     const takenSpace = directories[directories.length - 1].size || 0;
     const availableSpace = TOTAL_DISK_SPACE - takenSpace;
     const delta = REQUIRED_DISK_SPACE - availableSpace;
-
-    // root.size = 44376732
-    // console.log(directories[directories.length - 1]);
 
     return directories.find((directory) => {
         const answer = directory.size && directory.size >= delta;
@@ -66,11 +66,12 @@ export const flattenAndSortDirectories = (directory: Directory) => {
 };
 
 export const getTotalSizeOfDirectoriesUnderMaxSize = (directory: Directory, maxSize: number) => {
-    const directoriesWithMaxSize = getDirectoriesWithMaxSize(directory, maxSize);
+    const directoriesWithMaxSize = getDirectoriesWithSizeSmallerThanMax(directory, maxSize);
 
     return directoriesWithMaxSize.reduce<number>((acc, directory) => acc + (directory.size || 0), 0);
 };
 
+// TODO: write tests
 export const executeCommands = (root: Directory, streamList: string[]) => {
     let currentDirectory = root;
 
@@ -89,12 +90,12 @@ export const executeCommands = (root: Directory, streamList: string[]) => {
     });
 };
 
-export const getDirectoriesWithMaxSize = (directory: Directory, maxSize: number) => {
+export const getDirectoriesWithSizeSmallerThanMax = (directory: Directory, maxSize: number) => {
     const directories: Directory[] = [];
 
     directory.contents?.forEach((child) => {
         if ('contents' in child) {
-            directories.push(...getDirectoriesWithMaxSize(child, maxSize));
+            directories.push(...getDirectoriesWithSizeSmallerThanMax(child, maxSize));
         }
     });
 
@@ -121,6 +122,9 @@ export const changeDirectory = (currentDirectory: Directory, command: Command, _
     return currentDirectory;
 };
 
+/**
+ * Translates a list of directory contents into a list of files or directories and sets that list as the parent directory's contents
+ */
 export const listContents = (currentDirectory: Directory, command: Command, streamLocation: StreamLocation) => {
     const listOfContents = getContentsList(currentDirectory, streamLocation);
 
@@ -129,6 +133,9 @@ export const listContents = (currentDirectory: Directory, command: Command, stre
     }
 };
 
+/**
+ * Translates a list of directory contents in a list of files or directories
+ */
 export const getContentsList = (currentDirectory: Directory, streamLocation: StreamLocation) => {
     const { streamList, index } = streamLocation;
     const streamListCopy = [...streamList].slice(index + 1, streamList.length);
@@ -154,6 +161,10 @@ export const getContentsList = (currentDirectory: Directory, streamLocation: Str
     }, [] as (Directory | File)[]);
 };
 
+/**
+ * Iterates over entire directory tree and sets the size of each directory
+ * Opportunities for refactoring: Instead of modifying the original obj, try creating a new one and returning it
+ */
 export const setDirectorySize = (directory: Directory): number => {
     if (!directory.size && directory.contents) {
         directory.size = directory.contents.reduce((acc: number, child: Directory | File) => {
@@ -203,7 +214,7 @@ export const isCommand = (stream: string): Command | undefined => {
     }
 };
 
-export const isDirectory = (stream: string) => {
+export const isDirectory = (stream: string): Pick<Directory, 'name'> | undefined => {
     if (stream.startsWith('dir')) {
         return {
             name: stream.slice(4, stream.length),
