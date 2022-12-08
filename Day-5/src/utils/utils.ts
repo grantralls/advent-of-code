@@ -42,22 +42,12 @@ export const parseInput = (data: string): Data => {
     const instructions: Instruction[] = splitByLine
         .slice(instructionStartIndex, splitByLine.length)
         .map((unparsedInstruction) => {
-            const splitUnparsedInstruction = unparsedInstruction.split('');
-
-            const { number: quantity, end: quantityEnd } = getFirstNumberFromArray(splitUnparsedInstruction);
-
-            let newSplitInstruction = splitUnparsedInstruction.slice(quantityEnd + 1, splitUnparsedInstruction.length);
-
-            const { number: from, end: fromEnd } = getFirstNumberFromArray(newSplitInstruction);
-
-            newSplitInstruction = newSplitInstruction.slice(fromEnd + 1, newSplitInstruction.length);
-
-            const { number: to } = getFirstNumberFromArray(newSplitInstruction);
+            const parsedInstruction = unparsedInstruction.split(' ');
 
             return {
-                quantity,
-                from,
-                to,
+                quantity: Number(parsedInstruction[1]),
+                from: Number(parsedInstruction[3]),
+                to: Number(parsedInstruction[5]),
             };
         });
 
@@ -88,34 +78,4 @@ export const crateMover = (parsedData: Data, is9000: boolean): Ship => {
 export const getCratesAtTopOfStack = (ship: Ship) => {
     const cratesAtTopOfStack = ship.map((tower) => tower[tower.length - 1]);
     return cratesAtTopOfStack.reduce((accumulator, crate) => (Boolean(crate) ? accumulator + crate : accumulator), '');
-};
-
-export const getFirstNumberFromArray = (arr: string[]) => {
-    let indexOfFirstQuantityNumber = 0;
-
-    for (let i = 0; !Number(arr[i]); i++) {
-        indexOfFirstQuantityNumber = i + 1;
-    }
-
-    let indexOfLastQuantityNumber = indexOfFirstQuantityNumber;
-
-    for (let i = indexOfFirstQuantityNumber + 1; Number(arr[i]) || arr[i] === '0'; i++) {
-        indexOfLastQuantityNumber = i;
-    }
-
-    const number = createNumberFromRange(indexOfFirstQuantityNumber, indexOfLastQuantityNumber, arr);
-
-    return {
-        number,
-        start: indexOfFirstQuantityNumber,
-        end: indexOfLastQuantityNumber,
-    };
-};
-
-export const createNumberFromRange = (firstIndex: number, lastIndex: number, arr: string[]) => {
-    let number = '';
-    for (let i = firstIndex; i <= lastIndex; i++) {
-        number += arr[i];
-    }
-    return Number(number);
 };

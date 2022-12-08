@@ -1,4 +1,4 @@
-import { createNumberFromRange, getCratesAtTopOfStack, getFirstNumberFromArray, parseInput, crateMover } from './utils';
+import { getCratesAtTopOfStack, parseInput, crateMover } from './utils';
 import { readFileSync } from 'fs';
 
 describe('examples', () => {
@@ -129,45 +129,5 @@ describe('getCratesAtTopOfStack', () => {
         const results = getCratesAtTopOfStack(ship);
 
         expect(results).toStrictEqual('ND');
-    });
-});
-
-describe('getFirstNumberFromArray', () => {
-    it('should return the first single digit number from a string', () => {
-        const testString = 'hello 5 world';
-        const results = getFirstNumberFromArray(testString.split(''));
-
-        expect(results).toStrictEqual({
-            number: 5,
-            start: 6,
-            end: 6,
-        });
-    });
-
-    it('should return the first double digit number from a string', () => {
-        const testString = 'hello 50 world';
-        const results = getFirstNumberFromArray(testString.split(''));
-
-        expect(results).toStrictEqual({
-            number: 50,
-            start: 6,
-            end: 7,
-        });
-    });
-});
-
-describe('createNumberFromRange', () => {
-    it('should return 5 from "hello 5 world"', () => {
-        const testString = 'hello 5 world';
-        const results = createNumberFromRange(6, 6, testString.split(''));
-
-        expect(results).toBe(5);
-    });
-
-    it('should return 50 from "hello 50 world"', () => {
-        const testString = 'hello 50 world';
-        const results = createNumberFromRange(6, 7, testString.split(''));
-
-        expect(results).toBe(50);
     });
 });
