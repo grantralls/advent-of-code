@@ -222,62 +222,13 @@ export const isDirectory = (stream: string): Pick<Directory, 'name'> | undefined
     }
 };
 
-export const isFile = (command: string): File | undefined => {
-    if (Number(command[0]) || command[0] === '0') {
-        const results = getFirstNumberFromArray(command.split(''));
-
-        if (results) {
-            const { number: size, end } = results;
-            const name = command.slice(end + 2, command.length);
-
-            return {
-                name,
-                size,
-            };
-        }
-    }
-};
-
-export const getFirstNumberFromArray = (arr: string[]) => {
-    let indexOfFirstQuantityNumber: number | undefined;
-
-    let numberLoopStoppedAt = 0;
-    for (let i = 0; !Number(arr[i]) && arr[i] !== '0' && i < arr.length; i++) {
-        numberLoopStoppedAt = i;
-    }
-
-    if (numberLoopStoppedAt === arr.length && !Number(arr[numberLoopStoppedAt]) && arr[numberLoopStoppedAt] !== '0') {
-        return;
-    }
-
-    indexOfFirstQuantityNumber = numberLoopStoppedAt;
-
-    if (indexOfFirstQuantityNumber !== undefined) {
-        let indexOfLastQuantityNumber = indexOfFirstQuantityNumber;
-
-        for (let i = indexOfFirstQuantityNumber + 1; Number(arr[i]) || arr[i] === '0'; i++) {
-            indexOfLastQuantityNumber = i;
-        }
-
-        const number = createNumberFromRange(indexOfFirstQuantityNumber, indexOfLastQuantityNumber, arr);
+export const isFile = (line: string): File | undefined => {
+    if (Number(line[0]) || line[0] === '0') {
+        const results = line.split(' ');
 
         return {
-            number,
-            start: indexOfFirstQuantityNumber,
-            end: indexOfLastQuantityNumber,
+            name: results[1],
+            size: Number(results[0]),
         };
-    }
-};
-
-export const createNumberFromRange = (firstIndex: number, lastIndex: number, arr: string[]) => {
-    let number = '';
-    for (let i = firstIndex; i <= lastIndex; i++) {
-        number += arr[i];
-    }
-
-    if (Number(number) || number === '0') {
-        return Number(number);
-    } else {
-        throw new Error(`could not convert ${number} to a number`);
     }
 };
