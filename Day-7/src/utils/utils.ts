@@ -38,7 +38,6 @@ type StreamLocation = {
 
 export const parseInput = (stream: string) => stream.split('\n');
 
-// TODO: write tests
 export const findDirectoryToRemove = (directory: Directory) => {
     const directories = flattenAndSortDirectories(directory).reverse();
     const takenSpace = directories[directories.length - 1].size || 0;
@@ -71,7 +70,6 @@ export const getTotalSizeOfDirectoriesUnderMaxSize = (directory: Directory, maxS
     return directoriesWithMaxSize.reduce<number>((acc, directory) => acc + (directory.size || 0), 0);
 };
 
-// TODO: write tests
 export const executeCommands = (root: Directory, streamList: string[]) => {
     let currentDirectory = root;
 
