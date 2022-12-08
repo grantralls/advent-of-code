@@ -6,11 +6,13 @@
     "configurations": [
         {
             "type": "node",
-            "runtimeArgs": ["--experimental-modules"],
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Run Project",
             "program": "${workspaceFolder}/src/index.ts",
             "preLaunchTask": "tsc: build - tsconfig.json",
+            "sourceMaps": true,
+            "smartStep": true,
+            "internalConsoleOptions": "openOnSessionStart",
             "outFiles": ["${workspaceFolder}/dist/**/*.js"]
         }
     ]

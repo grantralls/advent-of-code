@@ -3,7 +3,7 @@
         "strict": true,
         "types": ["node", "jest"],
         "sourceMap": true,
-        "outDir": "./dist",
-        "esModuleInterop": true
-    }
+        "outDir": "./dist"
+    },
+    "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
