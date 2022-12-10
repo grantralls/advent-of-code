@@ -12,26 +12,14 @@ export class CPU {
     private registerValues: number[] = [];
     private instructions: Instruction[] = [];
     private currentInstruction: any | null = null;
-    private crt: CRT;
-    private crtStates: CRT[] = [];
+    private onCycleRun: (cycle: number) => void = () => {};
 
-    constructor(instructionSet: string[]) {
-        this.crt = new CRT();
+    constructor(instructionSet: string[], onCycleRun?: (cycle: number) => void) {
         this.instructions = this.convertInstructions(instructionSet);
-        this.run();
-
-        this.crt.printScreen();
+        this.onCycleRun = onCycleRun || this.onCycleRun;
     }
 
-    public DataVisualization() {
-        this.crtStates.forEach((crt, index) => {
-            setTimeout(() => {
-                crt.printScreen();
-            }, 20 * index);
-        });
-    }
-
-    private run(): void {
+    public run(): void {
         let cycle = 1;
 
         // Set the current instruction to the first in the list
@@ -46,15 +34,8 @@ export class CPU {
                 this.currentInstruction = this.getNextInstruction(cycle);
             }
 
-            // If the register is within 1 of the current x position of the current x position of the CRT
-            const x = this.crt.getXByCycle(cycle);
-            if (this.register <= x + 1 && this.register >= x - 1) {
-                // Set the current x position of the CRT to be lit
-                this.crt.setLitDuringCycle(cycle);
-            }
-
-            // Save crt states in an array for data visualization later
-            this.crtStates.push(new CRT(this.crt));
+            // Run the event handler for the cycle
+            this.onCycleRun(cycle);
 
             // Save the value of the register in an array for analysis later
             this.registerValues.push(this.register);
@@ -74,10 +55,8 @@ export class CPU {
         return sum;
     }
 
-    private printRegisterValues(): void {
-        for (let cycle = 19; cycle <= this.registerValues.length; cycle += 40) {
-            console.log(`Cycle: ${cycle + 1} - Register: ${this.registerValues[cycle]}`);
-        }
+    public get getRegister(): number {
+        return this.register;
     }
 
     private getNextInstruction(currentCycle: number): any | null {
@@ -115,9 +94,5 @@ export class CPU {
 
     private incrementRegisterBy(amountToIncrementBy: number): void {
         this.register += amountToIncrementBy;
-    }
-
-    private decremenRegisterBy(amountToDecrementBy: number): void {
-        this.register -= amountToDecrementBy;
     }
 }
