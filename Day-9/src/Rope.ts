@@ -34,7 +34,7 @@ export class Rope {
         this.nodeStateFrames.forEach((nodeState, index) => {
             setTimeout(() => {
                 console.clear();
-                const field = Array.from(Array(36)).map(() => Array.from(Array(36)).map(() => '.'));
+                const field = Array.from(Array(50)).map(() => Array.from(Array(50)).map(() => '.'));
 
                 nodeState.forEach((node: any, nodeIndex) => {
                     const nodeName = nodeIndex === 0 ? 'H' : nodeIndex.toString();
