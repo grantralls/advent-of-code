@@ -1,4 +1,5 @@
 import { Rope } from './Rope';
+import { readFile } from 'fs/promises';
 
 export const solution = (data: string) => {
     partOne(data);
