@@ -11,7 +11,7 @@ export class Rope {
     private nodes: Node[];
     private locationsVisitedByTail: Set<string>;
     private instructionSet: string[];
-    private nodeStates: Node[][] = [];
+    private nodeStateFrames: Node[][] = [];
 
     constructor(instructionSet: string[], numOfNodes: number) {
         this.nodes = [...Array.from(Array(numOfNodes))].map(() => new Node());
@@ -31,7 +31,7 @@ export class Rope {
     }
 
     public printRope() {
-        this.nodeStates.forEach((nodeState, index) => {
+        this.nodeStateFrames.forEach((nodeState, index) => {
             setTimeout(() => {
                 console.clear();
                 const field = Array.from(Array(36)).map(() => Array.from(Array(36)).map(() => '.'));
@@ -46,7 +46,7 @@ export class Rope {
                     console.log(row.join(''));
                 });
 
-                if (index === this.nodeStates.length - 1) {
+                if (index === this.nodeStateFrames.length - 1) {
                     console.log('Answer:', this.numberOfLocationsVisitedByTail(), 'locations visited by tail.');
                 }
             }, index * 100);
@@ -76,7 +76,7 @@ export class Rope {
 
             const tailLocation = this.nodes[this.nodes.length - 1].getLocationAsString();
 
-            this.nodeStates.push(structuredClone(this.nodes));
+            this.nodeStateFrames.push(structuredClone(this.nodes));
 
             this.locationsVisitedByTail.add(tailLocation);
         });

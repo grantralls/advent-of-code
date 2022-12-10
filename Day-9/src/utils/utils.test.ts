@@ -1,4 +1,4 @@
-import { partOne, partTwo, solution } from './utils';
+import { partOne, partTwo } from './utils';
 import { readFileSync } from 'fs';
 
 describe('examples/answers', () => {
