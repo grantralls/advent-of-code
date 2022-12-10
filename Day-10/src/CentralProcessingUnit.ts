@@ -1,5 +1,3 @@
-import { CRT } from './CathodeRayTube';
-
 type Instruction = {
     operation: string;
     cyclesToComplete: number;
