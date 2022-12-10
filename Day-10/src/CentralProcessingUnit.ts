@@ -43,6 +43,10 @@ export class CPU {
         }
     }
 
+    /**
+     *  The signal strength is the register value times its cycle number
+     *  This function sums every 40th signal starting at 20.
+     */
     public sumSignalStrengths(): number {
         let sum = 0;
         for (let cycle = 19; cycle <= this.registerValues.length; cycle += 40) {

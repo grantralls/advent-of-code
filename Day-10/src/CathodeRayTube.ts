@@ -3,8 +3,11 @@ enum CRTValue {
     '#',
 }
 
+const HEIGHT = 6;
+const WIDTH = 80;
+
 export class CRT {
-    private screen: string[][] = Array.from(Array(6)).map(() => Array.from(Array(40)).fill('.'));
+    private screen: string[][] = Array.from(Array(HEIGHT)).map(() => Array.from(Array(WIDTH)).fill('.'));
 
     constructor(crtToCopy?: CRT) {
         if (crtToCopy) {
@@ -20,16 +23,16 @@ export class CRT {
     }
 
     public getXByCycle(cycle: number): number {
-        return (cycle - 1) % 40;
+        return (cycle - 1) % WIDTH;
     }
 
     public getYByCycle(cycle: number): number {
-        return Math.floor((cycle - 1) / 40);
+        return Math.floor((cycle - 1) / WIDTH);
     }
 
     public setLitDuringCycle(cycle: number) {
-        const x = (cycle - 1) % 40;
-        const y = Math.floor((cycle - 1) / 40);
+        const x = (cycle - 1) % WIDTH;
+        const y = Math.floor((cycle - 1) / WIDTH);
         this.screen[y][x] = CRTValue[CRTValue['#']];
     }
 }
