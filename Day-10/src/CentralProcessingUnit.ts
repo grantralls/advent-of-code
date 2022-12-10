@@ -27,7 +27,7 @@ export class CPU {
         this.crtStates.forEach((crt, index) => {
             setTimeout(() => {
                 crt.printScreen();
-            }, 100 * index);
+            }, 20 * index);
         });
     }
 
