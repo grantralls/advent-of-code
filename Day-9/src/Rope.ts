@@ -55,11 +55,15 @@ export class Rope {
 
     private moveBrokenNode(node: Node, index: number) {
         const brokenNode = this.nodes[index + 1];
+
         const deltaX = node.getLocation().x - brokenNode.getLocation().x;
         const deltaY = node.getLocation().y - brokenNode.getLocation().y;
 
-        const moveByX = brokenNode.getLocation().x + (deltaX / Math.abs(deltaX) || 0);
-        const moveByY = brokenNode.getLocation().y + (deltaY / Math.abs(deltaY) || 0);
+        const normalizedDeltaX = deltaX / Math.abs(deltaX) || 0;
+        const normalizedDeltaY = deltaY / Math.abs(deltaY) || 0;
+
+        const moveByX = brokenNode.getLocation().x + normalizedDeltaX;
+        const moveByY = brokenNode.getLocation().y + normalizedDeltaY;
 
         brokenNode.setLocation({ x: moveByX, y: moveByY });
     }
