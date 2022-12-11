@@ -1,4 +1,4 @@
-import { Rope } from './Rope';
+import { Rope } from '../Rope';
 
 export const solution = (data: string) => {
     partOne(data);
