@@ -11,6 +11,7 @@ export class Rope {
     private nodes: Node[];
     private locationsVisitedByTail: Set<string>;
     private instructionSet: string[];
+    private nodeStateFrames: Node[][] = [];
 
     constructor(instructionSet: string[], numOfNodes: number) {
         this.nodes = [...Array.from(Array(numOfNodes))].map(() => new Node());
@@ -29,13 +30,40 @@ export class Rope {
         return this.locationsVisitedByTail.size;
     }
 
+    public printRope() {
+        this.nodeStateFrames.forEach((nodeState, index) => {
+            setTimeout(() => {
+                console.clear();
+                const field = Array.from(Array(50)).map(() => Array.from(Array(50)).map(() => '.'));
+
+                nodeState.forEach((node: any, nodeIndex) => {
+                    const nodeName = nodeIndex === 0 ? 'H' : nodeIndex.toString();
+
+                    field[field.length / 2 - node.location.y][node.location.x + field.length / 2] = nodeName;
+                });
+
+                field.forEach((row) => {
+                    console.log(row.join(''));
+                });
+
+                if (index === this.nodeStateFrames.length - 1) {
+                    console.log('Answer:', this.numberOfLocationsVisitedByTail(), 'locations visited by tail.');
+                }
+            }, index * 100);
+        });
+    }
+
     private moveBrokenNode(node: Node, index: number) {
         const brokenNode = this.nodes[index + 1];
+
         const deltaX = node.getLocation().x - brokenNode.getLocation().x;
         const deltaY = node.getLocation().y - brokenNode.getLocation().y;
 
-        const moveByX = brokenNode.getLocation().x + (deltaX / Math.abs(deltaX) || 0);
-        const moveByY = brokenNode.getLocation().y + (deltaY / Math.abs(deltaY) || 0);
+        const normalizedDeltaX = deltaX / Math.abs(deltaX) || 0;
+        const normalizedDeltaY = deltaY / Math.abs(deltaY) || 0;
+
+        const moveByX = brokenNode.getLocation().x + normalizedDeltaX;
+        const moveByY = brokenNode.getLocation().y + normalizedDeltaY;
 
         brokenNode.setLocation({ x: moveByX, y: moveByY });
     }
@@ -51,6 +79,8 @@ export class Rope {
             });
 
             const tailLocation = this.nodes[this.nodes.length - 1].getLocationAsString();
+
+            this.nodeStateFrames.push(structuredClone(this.nodes));
 
             this.locationsVisitedByTail.add(tailLocation);
         });

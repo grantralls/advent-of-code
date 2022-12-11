@@ -6,7 +6,7 @@
     "scripts": {
         "test": "jest",
         "start": "tsx src/index.ts",
-        "start-datavis": "tsx src/datavis.ts"
+        "start-datavis": "tsx src/datavisualization.ts"
     },
     "keywords": [],
     "author": "",
