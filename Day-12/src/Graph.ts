@@ -43,6 +43,13 @@ export class Graph {
                     queue.push(neighbor);
                 }
             });
+
+            console.clear();
+            path.forEach((row, y) => {
+                const results = row.map((itemInRow) => (itemInRow ? '#' : '.'));
+
+                console.log(results.join(''));
+            });
         }
 
         return this.constructPath(path).length;
