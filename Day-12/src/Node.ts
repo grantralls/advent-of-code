@@ -7,7 +7,7 @@ export class Node {
         return this.value;
     }
 
-    public get locationAsString() {
+    public get getLocationAsString() {
         return `${this.location.x},${this.location.y}`;
     }
 

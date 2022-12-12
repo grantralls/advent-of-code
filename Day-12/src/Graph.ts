@@ -18,41 +18,25 @@ export class Graph {
     }
 
     private BreadthFirstSearch(desiredEndValue: string) {
-        const queue: Node[] = [this.startingNode];
-        const visited: Set<Node> = new Set();
-
-        // Generates a matrix the same size of the nodes list and fills it will null
-        const path: (null | { value: string; node: Node })[][] = Array.from(Array(this.generatedNodes.length)).map(
-            (row) => {
-                return Array.from(Array(this.generatedNodes[0].length)).map(() => null);
-            }
-        );
+        const queue = [this.startingNode.getLocation];
+        const visited: Set<string> = new Set();
 
         while (queue.length > 0) {
-            const currentNode = queue.shift() as Node;
-            visited.add(currentNode);
+            const currentLocation = queue.shift() as { x: number; y: number };
+            const currentNode = this.generatedNodes[currentLocation.y][currentLocation.x] as Node;
+            visited.add(currentNode.getLocationAsString);
 
             if (currentNode.getValue === desiredEndValue) {
                 break;
             }
 
             currentNode.getNeighbors.forEach((neighbor) => {
-                if (!visited.has(neighbor)) {
+                if (!visited.has(neighbor.getLocationAsString)) {
                     const { x, y } = neighbor.getLocation;
-                    path[y][x] = { value: neighbor.getValue, node: currentNode };
-                    queue.push(neighbor);
+                    queue.push(neighbor.getLocation);
                 }
             });
-
-            console.clear();
-            path.forEach((row, y) => {
-                const results = row.map((itemInRow) => (itemInRow ? '#' : '.'));
-
-                console.log(results.join(''));
-            });
         }
-
-        return this.constructPath(path).length;
     }
 
     private constructPath(path: (null | { value: string; node: Node })[][]) {
