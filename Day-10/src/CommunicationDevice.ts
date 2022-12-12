@@ -7,7 +7,8 @@ export class CommunicationDevice {
     private crtStates: CRT[] = [];
 
     constructor(instructionSet: string[]) {
-        this.cpu = new CPU(instructionSet, this.onCycleRun.bind(this));
+        this.cpu = new CPU(instructionSet);
+        this.cpu.onCycleRun = this.onCycleRun.bind(this);
         this.crt = new CRT();
 
         this.cpu.run();

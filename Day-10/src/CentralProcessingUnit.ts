@@ -10,11 +10,10 @@ export class CPU {
     private registerValues: number[] = [];
     private instructions: Instruction[] = [];
     private currentInstruction: any | null = null;
-    private onCycleRun: (cycle: number) => void = () => {};
+    public onCycleRun: (cycle: number) => void = () => {};
 
-    constructor(instructionSet: string[], onCycleRun?: (cycle: number) => void) {
+    constructor(instructionSet: string[]) {
         this.instructions = this.convertInstructions(instructionSet);
-        this.onCycleRun = onCycleRun || this.onCycleRun;
     }
 
     public run(): void {
