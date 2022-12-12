@@ -1,4 +1,5 @@
 import { Node } from './Node';
+import { Queue } from './Queue';
 
 export class Graph {
     private startingNode: Node;
@@ -18,11 +19,18 @@ export class Graph {
     }
 
     private BreadthFirstSearch(desiredEndValue: string) {
-        const queue = [this.startingNode.getLocation];
+        // const queue = [this.startingNode.getLocation];
+        const queue = new Queue<Node>();
+        queue.enqueue(this.startingNode);
         const visited: Set<string> = new Set();
+        const path: (null | { value: string; node: Node })[][] = Array.from(Array(this.generatedNodes.length)).map(
+            (row, y) => {
+                return Array.from(Array(this.generatedNodes[y].length)).map(() => null);
+            }
+        );
 
-        while (queue.length > 0) {
-            const currentLocation = queue.shift() as { x: number; y: number };
+        while (queue.getLength > 0) {
+            const currentLocation = queue.dequeue()?.getLocation as { x: number; y: number };
             const currentNode = this.generatedNodes[currentLocation.y][currentLocation.x] as Node;
             visited.add(currentNode.getLocationAsString);
 
@@ -33,10 +41,19 @@ export class Graph {
             currentNode.getNeighbors.forEach((neighbor) => {
                 if (!visited.has(neighbor.getLocationAsString)) {
                     const { x, y } = neighbor.getLocation;
-                    queue.push(neighbor.getLocation);
+                    path[y][x] = { value: currentNode.getValue, node: currentNode };
+                    queue.enqueue(neighbor);
                 }
             });
+
+            console.clear();
+            path.forEach((row) => {
+                const results = row.map((item) => (item ? '#' : ' '));
+                console.log(results.join(''));
+            });
         }
+
+        console.log(this.constructPath(path).length);
     }
 
     private constructPath(path: (null | { value: string; node: Node })[][]) {
