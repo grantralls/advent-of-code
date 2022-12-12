@@ -8,7 +8,7 @@ export class Graph {
     constructor(private input: string[][]) {
         this.generatedNodes = this.generateNodes();
         this.startingNode = this.findNodeByValue('S') as unknown as Node;
-        this.endingNode = this.findNodeByValue('E') as unknown as Node;
+        this.endingNode = this.findNodeByValue('b') as unknown as Node;
 
         this.generatedNodes.forEach((row) => {
             row.forEach((node) => {
@@ -16,10 +16,10 @@ export class Graph {
             });
         });
 
-        console.log(this.BreadthFirstSearch('E'));
+        console.log(this.BreadthFirstSearch());
     }
 
-    private BreadthFirstSearch(desiredEndValue: string) {
+    private BreadthFirstSearch() {
         const queue = [this.startingNode];
         const visited: Set<string> = new Set();
         const path: (null | { value: string; node: Node })[][] = Array.from(Array(this.generatedNodes.length)).map(
@@ -28,24 +28,24 @@ export class Graph {
             }
         );
 
+        visited.add(queue[0].getLocationAsString);
+
         while (queue.length > 0) {
             const currentNode = queue.shift() as Node;
             if (currentNode === this.endingNode) {
                 break;
             }
-            if (!visited.has(currentNode.getLocationAsString)) {
-                visited.add(currentNode.getLocationAsString);
 
-                currentNode.getNeighbors.forEach((neighbor) => {
-                    if (!visited.has(neighbor.getLocationAsString)) {
-                        const { x, y } = neighbor.getLocation;
-                        path[y][x] = { value: currentNode.getValue, node: currentNode };
-                        queue.push(neighbor);
-                    }
-                });
+            currentNode.getNeighbors.forEach((neighbor) => {
+                if (!visited.has(neighbor.getLocationAsString)) {
+                    const { x, y } = neighbor.getLocation;
+                    path[y][x] = { value: currentNode.getValue, node: currentNode };
+                    queue.push(neighbor);
+                    visited.add(neighbor.getLocationAsString);
+                }
+            });
 
-                console.log('ran on ', currentNode.getLocationAsString);
-            }
+            console.log('ran on ', currentNode.getLocationAsString);
         }
 
         return this.constructPath(path).length;
