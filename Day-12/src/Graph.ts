@@ -8,7 +8,7 @@ export class Graph {
     constructor(private input: string[][]) {
         this.generatedNodes = this.generateNodes();
         this.startingNode = this.findNodeByValue('S') as unknown as Node;
-        this.endingNode = this.findNodeByValue('b') as unknown as Node;
+        this.endingNode = this.findNodeByValue('E') as unknown as Node;
 
         this.generatedNodes.forEach((row) => {
             row.forEach((node) => {
