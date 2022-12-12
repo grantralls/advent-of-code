@@ -1,20 +1,27 @@
 import { Item } from './Item';
 
+// In some instances the value of the item can get so large that it overflows the number type.
+// This is a problem because the worry level is used to determine the next monkey to throw the item to.
+// This problem is solved by saving the worry level as the modulo of the least common multiple between
+// all monkey 'divisible by' values. This way the worry level will never be larger than the least common multiple.
 export class Monkey {
     private itemsHeld: Item[] = [];
     public worryLevelModifier: (currentWorryLevel: number) => number;
     public testCase: (currentWorryLevel: number) => Monkey;
-    public id = 0;
     private timesInspected = 0;
+    private isPartOne: boolean;
+    public lcm: number = 1;
 
     constructor(
+        isPartOne: boolean,
         startingItems?: Item[],
         worryLevelModifier?: (currentWorryLevel: number) => number,
         testCase?: (currentWorryLevel: number) => Monkey
     ) {
         this.itemsHeld = startingItems || [];
         this.worryLevelModifier = worryLevelModifier || ((currentWorryLevel: number) => currentWorryLevel);
-        this.testCase = testCase || ((currentWorryLevel: number) => this);
+        this.testCase = testCase || ((_: number) => this);
+        this.isPartOne = isPartOne;
     }
 
     public playRound() {
@@ -44,12 +51,17 @@ export class Monkey {
     }
 
     private inspectFirstItem() {
-        const newWorryLevel = this.worryLevelModifier(this.itemsHeld[0].getWorryLevel());
+        if (this.itemsHeld.length !== 0) {
+            this.timesInspected++;
+        }
 
-        // Immediately divide by three since the Monkey gets bored easily
-        this.itemsHeld[0].setWorryLevel(Math.floor(newWorryLevel / 3));
+        // The item value should never exceed the Least Common Multiple of all monkeys.
+        const newWorryLevel = this.worryLevelModifier(this.itemsHeld[0].getWorryLevel()) % this.lcm;
 
-        this.timesInspected++;
+        // Boolean to give different answers for part 1 and 2.
+        const division = this.isPartOne ? 3 : 1;
+
+        this.itemsHeld[0].setWorryLevel(Math.floor(newWorryLevel / division));
     }
 
     private receiveItem(item: Item) {
