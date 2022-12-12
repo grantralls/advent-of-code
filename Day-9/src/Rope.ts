@@ -53,12 +53,16 @@ export class Rope {
         });
     }
 
-    private moveBrokenNode(node: Node, index: number) {
+    private moveBrokenNode(nodeThatMoved: Node, index: number) {
         const brokenNode = this.nodes[index + 1];
 
-        const deltaX = node.getLocation().x - brokenNode.getLocation().x;
-        const deltaY = node.getLocation().y - brokenNode.getLocation().y;
+        // Find the difference in x and y between the two nodes with reference to the node that moved
+        const deltaX = nodeThatMoved.getLocation().x - brokenNode.getLocation().x;
+        const deltaY = nodeThatMoved.getLocation().y - brokenNode.getLocation().y;
 
+        // Normalize the difference to either -1, 0 or 1
+        // This allows us to move the broken node in the correct direction
+        // The direction can be up (0, 1) down (0, -1), right, (1, 0) or left (-1, 0) or diagonally
         const normalizedDeltaX = deltaX / Math.abs(deltaX) || 0;
         const normalizedDeltaY = deltaY / Math.abs(deltaY) || 0;
 
@@ -70,27 +74,32 @@ export class Rope {
 
     private moveNodes(direction: keyof typeof Direction, numOfSteps: number) {
         Array.from(Array(numOfSteps)).forEach(() => {
+            // Move the head
             this.nodes[0].moveNode(Direction[direction], 1);
 
+            // Move each node if the rope is broken at that node
             this.nodes.forEach((node, index) => {
                 if (this.isRopeBrokenAtNode(index)) {
                     this.moveBrokenNode(node, index);
                 }
             });
 
+            // Save the tail location
             const tailLocation = this.nodes[this.nodes.length - 1].getLocationAsString();
-
-            this.nodeStateFrames.push(structuredClone(this.nodes));
-
             this.locationsVisitedByTail.add(tailLocation);
+
+            // Save the state of the nodes for data visualization
+            this.nodeStateFrames.push(structuredClone(this.nodes));
         });
     }
 
     private isRopeBrokenAtNode(nodeIndex: number): boolean {
+        // If the node is the last node in the rope, the rope is not broken at this node
         if (nodeIndex === this.nodes.length - 1) {
             return false;
         }
 
+        // If the coordinate difference between the node and the next node is greater than 1, the rope is broken at this node
         const locationOfNodeToCheck = this.nodes[nodeIndex].getLocation();
         const locationOfNodeAfter = this.nodes[nodeIndex + 1].getLocation();
 
