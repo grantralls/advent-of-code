@@ -1,13 +1,14 @@
 import { Node } from './Node';
-import { Queue } from './Queue';
 
 export class Graph {
     private startingNode: Node;
     private generatedNodes: Node[][] = [];
+    private endingNode: Node;
 
     constructor(private input: string[][]) {
         this.generatedNodes = this.generateNodes();
         this.startingNode = this.findNodeByValue('S') as unknown as Node;
+        this.endingNode = this.findNodeByValue('E') as unknown as Node;
 
         this.generatedNodes.forEach((row) => {
             row.forEach((node) => {
@@ -19,9 +20,7 @@ export class Graph {
     }
 
     private BreadthFirstSearch(desiredEndValue: string) {
-        // const queue = [this.startingNode.getLocation];
-        const queue = new Queue<Node>();
-        queue.enqueue(this.startingNode);
+        const queue = [this.startingNode];
         const visited: Set<string> = new Set();
         const path: (null | { value: string; node: Node })[][] = Array.from(Array(this.generatedNodes.length)).map(
             (row, y) => {
@@ -29,38 +28,32 @@ export class Graph {
             }
         );
 
-        while (queue.getLength > 0) {
-            const currentLocation = queue.dequeue()?.getLocation as { x: number; y: number };
-            const currentNode = this.generatedNodes[currentLocation.y][currentLocation.x] as Node;
-            visited.add(currentNode.getLocationAsString);
-
-            if (currentNode.getValue === desiredEndValue) {
+        while (queue.length > 0) {
+            const currentNode = queue.shift() as Node;
+            if (currentNode === this.endingNode) {
                 break;
             }
+            if (!visited.has(currentNode.getLocationAsString)) {
+                visited.add(currentNode.getLocationAsString);
 
-            currentNode.getNeighbors.forEach((neighbor) => {
-                if (!visited.has(neighbor.getLocationAsString)) {
-                    const { x, y } = neighbor.getLocation;
-                    path[y][x] = { value: currentNode.getValue, node: currentNode };
-                    queue.enqueue(neighbor);
-                }
-            });
+                currentNode.getNeighbors.forEach((neighbor) => {
+                    if (!visited.has(neighbor.getLocationAsString)) {
+                        const { x, y } = neighbor.getLocation;
+                        path[y][x] = { value: currentNode.getValue, node: currentNode };
+                        queue.push(neighbor);
+                    }
+                });
 
-            console.clear();
-            path.forEach((row) => {
-                const results = row.map((item) => (item ? '#' : ' '));
-                console.log(results.join(''));
-            });
+                console.log('ran on ', currentNode.getLocationAsString);
+            }
         }
 
-        console.log(this.constructPath(path).length);
+        return this.constructPath(path).length;
     }
 
     private constructPath(path: (null | { value: string; node: Node })[][]) {
-        const desiredLocation = { x: 5, y: 2 };
+        let currentValue = path[this.endingNode.getLocation.y][this.endingNode.getLocation.x];
         const finalPath = [];
-
-        let currentValue = path[desiredLocation.y][desiredLocation.x];
 
         while (currentValue) {
             finalPath.push(currentValue);
@@ -130,7 +123,9 @@ export class Graph {
             newCharB = mapper[charB as keyof typeof mapper];
         }
 
-        return Math.abs(newCharA.charCodeAt(0) - newCharB.charCodeAt(0)) <= 1;
+        const result = Math.abs(newCharA.charCodeAt(0) - newCharB.charCodeAt(0)) <= 1;
+
+        return result;
     }
 
     private generateNodes(): Node[][] {
