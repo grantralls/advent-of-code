@@ -4,7 +4,7 @@ enum CRTValue {
 }
 
 const HEIGHT = 6;
-const WIDTH = 80;
+const WIDTH = 40;
 
 export class CRT {
     private screen: string[][] = Array.from(Array(HEIGHT)).map(() => Array.from(Array(WIDTH)).fill('.'));
