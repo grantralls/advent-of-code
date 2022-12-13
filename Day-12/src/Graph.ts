@@ -21,32 +21,37 @@ export class Graph {
 
     private BreadthFirstSearch() {
         const queue = [this.startingNode];
-        const visited: Set<string> = new Set();
+        const visited = new Set();
         const path: (null | { value: string; node: Node })[][] = Array.from(Array(this.generatedNodes.length)).map(
             (row, y) => {
                 return Array.from(Array(this.generatedNodes[y].length)).map(() => null);
             }
         );
 
-        visited.add(queue[0].getLocationAsString);
+        visited.add(queue[0]);
 
         while (queue.length > 0) {
             const currentNode = queue.shift() as Node;
+            // visited.add(currentNode);
             if (currentNode === this.endingNode) {
                 break;
             }
 
             currentNode.getNeighbors.forEach((neighbor) => {
-                if (!visited.has(neighbor.getLocationAsString)) {
+                if (!visited.has(neighbor)) {
+                    visited.add(neighbor);
                     const { x, y } = neighbor.getLocation;
                     path[y][x] = { value: currentNode.getValue, node: currentNode };
                     queue.push(neighbor);
-                    visited.add(neighbor.getLocationAsString);
+                    visited.add(neighbor);
                 }
             });
-
-            console.log('ran on ', currentNode.getLocationAsString);
         }
+
+        path.forEach((row, y) => {
+            const results = row.map((node, x) => (node ? this.generatedNodes[y][x].getValue.toUpperCase() : '.'));
+            console.log(y, results.join(''));
+        });
 
         return this.constructPath(path).length;
     }
@@ -107,23 +112,23 @@ export class Graph {
         node.setNeighbors = neighborsNodes;
     }
 
-    private isCharWithinOneStepAway(charA: string, charB: string): boolean {
+    private isCharWithinOneStepAway(currentPosition: string, desiredPosition: string): boolean {
         const mapper = {
             S: 'a',
             E: 'z',
         };
 
-        let newCharA = charA;
-        let newCharB = charB;
-        if (mapper[charA as keyof typeof mapper]) {
-            newCharA = mapper[charA as keyof typeof mapper];
+        let newCurrentPosition = currentPosition;
+        let newDesiredPosition = desiredPosition;
+        if (mapper[currentPosition as keyof typeof mapper]) {
+            newCurrentPosition = mapper[currentPosition as keyof typeof mapper];
         }
 
-        if (mapper[charB as keyof typeof mapper]) {
-            newCharB = mapper[charB as keyof typeof mapper];
+        if (mapper[desiredPosition as keyof typeof mapper]) {
+            newDesiredPosition = mapper[desiredPosition as keyof typeof mapper];
         }
 
-        const result = Math.abs(newCharA.charCodeAt(0) - newCharB.charCodeAt(0)) <= 1;
+        const result = newDesiredPosition.charCodeAt(0) - newCurrentPosition.charCodeAt(0) <= 1;
 
         return result;
     }
