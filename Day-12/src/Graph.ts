@@ -1,5 +1,7 @@
 import { Node } from './Node';
 
+type ParentNode = null | { value: string; parentNode: Node };
+
 export class Graph {
     private generatedNodes: Node[][] = [];
     private finalPath: (null | string)[][] = [];
@@ -21,6 +23,7 @@ export class Graph {
         });
     }
 
+    // https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/
     public BreadthFirstSearch(
         startingValue: string | { x: number; y: number },
         endingValue: string | { x: number; y: number }
@@ -30,9 +33,10 @@ export class Graph {
 
         const queue = [startingNode];
         const visited = new Set();
-        const path: (null | { value: string; parentNode: Node })[][] = Array.from(
-            Array(this.generatedNodes.length)
-        ).map((row, y) => {
+
+        // generate a matrix of nulls with the same dimensions as the input.
+        // The nulls will be replaced by the ParentType
+        const path: ParentNode[][] = Array.from(Array(this.generatedNodes.length)).map((row, y) => {
             return Array.from(Array(this.generatedNodes[y].length)).map(() => null);
         });
 
@@ -58,7 +62,8 @@ export class Graph {
         return this.constructPath(path, endingNode as Node);
     }
 
-    private constructPath(path: (null | { value: string; parentNode: Node })[][], finalNode: Node) {
+    // Saves the parent of node x in the space of node x. This is used to construct the path by starting at the final node.
+    private constructPath(path: ParentNode[][], finalNode: Node) {
         // Save a blank path for data visualization
         const generatePath: (null | string)[][] = Array.from(Array(this.generatedNodes.length)).map((row, y) => {
             return Array.from(Array(this.generatedNodes[y].length)).map(() => null);

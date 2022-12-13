@@ -21,4 +21,10 @@ describe('examples/answers', () => {
         partTwo(data);
         expect(consoleSpy).toHaveBeenCalledWith('Answer 2:', 29);
     });
+
+    it('should return 354 for the answer to part two', () => {
+        const data = readFileSync('src/input.txt', 'utf-8');
+        partTwo(data);
+        expect(consoleSpy).toHaveBeenCalledWith('Answer 2:', 354);
+    });
 });
