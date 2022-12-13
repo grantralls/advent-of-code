@@ -1,39 +1,46 @@
 import { Node } from './Node';
 
 export class Graph {
-    private startingNode: Node;
     private generatedNodes: Node[][] = [];
-    private endingNode: Node;
+    private finalPath: (null | string)[][] = [];
 
-    constructor(private input: string[][]) {
-        this.generatedNodes = this.generateNodes();
-        this.startingNode = this.findNodeByValue('S') as unknown as Node;
-        this.endingNode = this.findNodeByValue('E') as unknown as Node;
+    constructor(input: string[][]) {
+        this.generatedNodes = this.generateNodes(input);
 
         this.generatedNodes.forEach((row) => {
             row.forEach((node) => {
                 this.setNeighborsOfNode(node);
             });
         });
-
-        console.log(this.BreadthFirstSearch());
     }
 
-    private BreadthFirstSearch() {
-        const queue = [this.startingNode];
+    public printPath() {
+        this.finalPath.forEach((row, y) => {
+            const results = row.map((value, x) => (value ? value : '.'));
+            console.log(y, results.join(''));
+        });
+    }
+
+    public BreadthFirstSearch(
+        startingValue: string | { x: number; y: number },
+        endingValue: string | { x: number; y: number }
+    ) {
+        const startingNode = this.findNodeByValue(startingValue);
+        const endingNode = this.findNodeByValue(endingValue);
+
+        const queue = [startingNode];
         const visited = new Set();
-        const path: (null | { value: string; node: Node })[][] = Array.from(Array(this.generatedNodes.length)).map(
-            (row, y) => {
-                return Array.from(Array(this.generatedNodes[y].length)).map(() => null);
-            }
-        );
+        const path: (null | { value: string; parentNode: Node })[][] = Array.from(
+            Array(this.generatedNodes.length)
+        ).map((row, y) => {
+            return Array.from(Array(this.generatedNodes[y].length)).map(() => null);
+        });
 
         visited.add(queue[0]);
 
         while (queue.length > 0) {
             const currentNode = queue.shift() as Node;
-            // visited.add(currentNode);
-            if (currentNode === this.endingNode) {
+            if (currentNode === endingNode) {
                 break;
             }
 
@@ -41,45 +48,54 @@ export class Graph {
                 if (!visited.has(neighbor)) {
                     visited.add(neighbor);
                     const { x, y } = neighbor.getLocation;
-                    path[y][x] = { value: currentNode.getValue, node: currentNode };
+                    path[y][x] = { value: currentNode.getValue, parentNode: currentNode };
                     queue.push(neighbor);
                     visited.add(neighbor);
                 }
             });
         }
 
-        path.forEach((row, y) => {
-            const results = row.map((node, x) => (node ? this.generatedNodes[y][x].getValue.toUpperCase() : '.'));
-            console.log(y, results.join(''));
-        });
-
-        return this.constructPath(path).length;
+        return this.constructPath(path, endingNode as Node);
     }
 
-    private constructPath(path: (null | { value: string; node: Node })[][]) {
-        let currentValue = path[this.endingNode.getLocation.y][this.endingNode.getLocation.x];
+    private constructPath(path: (null | { value: string; parentNode: Node })[][], finalNode: Node) {
+        // Save a blank path for data visualization
+        const generatePath: (null | string)[][] = Array.from(Array(this.generatedNodes.length)).map((row, y) => {
+            return Array.from(Array(this.generatedNodes[y].length)).map(() => null);
+        });
+
+        let currentValue = path[finalNode.getLocation.y][finalNode.getLocation.x];
+        generatePath[finalNode.getLocation.y][finalNode.getLocation.x] = 'X';
         const finalPath = [];
 
         while (currentValue) {
             finalPath.push(currentValue);
-            currentValue = path[currentValue.node.getLocation.y][currentValue.node.getLocation.x];
+            generatePath[currentValue.parentNode.getLocation.y][currentValue.parentNode.getLocation.x] =
+                currentValue.value.toUpperCase();
+            currentValue = path[currentValue.parentNode.getLocation.y][currentValue.parentNode.getLocation.x];
         }
+
+        this.finalPath = generatePath;
 
         const finalValue = finalPath.reverse();
 
         return finalValue;
     }
 
-    private findNodeByValue(value: string) {
+    private findNodeByValue(value: string | { x: number; y: number }): Node | undefined {
         let node: Node | undefined = undefined;
 
-        this.generatedNodes.forEach((row, y) => {
-            row.forEach((nodes, x) => {
-                if (nodes.getValue === value) {
-                    node = this.generatedNodes[y][x];
-                }
+        if (typeof value === 'string') {
+            this.generatedNodes.forEach((row, y) => {
+                row.forEach((nodes, x) => {
+                    if (nodes.getValue === value) {
+                        node = this.generatedNodes[y][x];
+                    }
+                });
             });
-        });
+        } else {
+            node = this.generatedNodes[value.y][value.x];
+        }
 
         return node;
     }
@@ -97,7 +113,7 @@ export class Graph {
             return (
                 this.generatedNodes[potentialNeighborLocation.y] &&
                 this.generatedNodes[potentialNeighborLocation.y][potentialNeighborLocation.x] &&
-                this.isCharWithinOneStepAway(
+                this.isCharScoreOneOrLessHigher(
                     node.getValue,
                     this.generatedNodes[potentialNeighborLocation.y][potentialNeighborLocation.x].getValue
                 )
@@ -112,7 +128,8 @@ export class Graph {
         node.setNeighbors = neighborsNodes;
     }
 
-    private isCharWithinOneStepAway(currentPosition: string, desiredPosition: string): boolean {
+    private isCharScoreOneOrLessHigher(currentPosition: string, desiredPosition: string): boolean {
+        // Let S be equivalent to a (the lowest score) and E be equivalent to z (the highest score)
         const mapper = {
             S: 'a',
             E: 'z',
@@ -133,8 +150,8 @@ export class Graph {
         return result;
     }
 
-    private generateNodes(): Node[][] {
-        return this.input.map((row, y) => {
+    private generateNodes(input: string[][]): Node[][] {
+        return input.map((row, y) => {
             return row.map((node, x) => {
                 return new Node(node, { x, y });
             });
