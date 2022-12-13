@@ -9,7 +9,6 @@ export const solution = (data: string) => {
     console.log(results);
     const sum = sumIndicies(results);
     console.log(sum);
-    // partTwo(data);
 };
 
 export const solveAllPairs = (data: PacketPair[]): boolean[] => {
@@ -59,13 +58,13 @@ export const solvePair = (data: PacketPair): boolean | undefined => {
                 break;
             }
             if (typeof rightSide === 'object' && typeof leftSide === 'number') {
-                isInRightOrder = solvePair([[leftSide], rightSide as Packet]);
+                isInRightOrder = solvePair([[leftSide], rightSide]);
             }
             if (typeof leftSide === 'object' && typeof rightSide === 'number') {
-                isInRightOrder = solvePair([leftSide as Packet, [rightSide]]);
+                isInRightOrder = solvePair([leftSide, [rightSide]]);
             }
             if (typeof leftSide === 'object' && typeof rightSide === 'object') {
-                isInRightOrder = solvePair([leftSide as Packet, rightSide as Packet]);
+                isInRightOrder = solvePair([leftSide, rightSide]);
             }
         }
     }
