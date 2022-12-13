@@ -1,14 +1,15 @@
 type Packet = (number | undefined | Packet)[];
 type PacketPair = Packet[];
 
-export const solution = (data: string) => {
+export const solution = (data: string) => {};
+
+export const partOne = (data: string) => {
     const splitOnce = data.split('\n\n');
     const splitTwice = splitOnce.map((pair) => pair.split('\n'));
     const arraysList = splitTwice.map((pair) => [eval(pair[0]), eval(pair[1])]);
     const results = solveAllPairs(arraysList);
-    console.log(results);
     const sum = sumIndicies(results);
-    console.log(sum);
+    console.log('Answer 1:', sum);
 };
 
 export const solveAllPairs = (data: PacketPair[]): boolean[] => {
@@ -21,66 +22,41 @@ export const sumIndicies = (data: boolean[]) => {
 };
 
 export const solvePair = (data: PacketPair): boolean | undefined => {
-    const longestArray = data.reduce((acc, curr) => (acc > curr.length ? acc : curr.length), 0);
+    const leftPacket = data[0];
+    const rightPacket = data[1];
 
     let isInRightOrder;
 
-    for (let i = 0; i < longestArray && isInRightOrder === undefined; i++) {
-        const leftSide = data[0][i] || data[0][i] === 0 ? data[0][i] : undefined;
-        const rightSide = data[1][i] || data[1][i] === 0 ? data[1][i] : undefined;
+    if (leftPacket.length === 0 && rightPacket.length > 0) return true;
 
-        const isRightSideNumberOrUndefined = typeof rightSide === 'number' || typeof rightSide === 'undefined';
-        const isLeftSideNumberOrUndefined = typeof leftSide === 'number' || typeof leftSide === 'undefined';
+    for (let i = 0; i < leftPacket.length; i++) {
+        if (rightPacket[i] === undefined) isInRightOrder = false;
 
-        if (isRightSideNumberOrUndefined && isLeftSideNumberOrUndefined) {
-            if (leftSide !== undefined && rightSide === undefined) {
-                isInRightOrder = false;
-                break;
-            }
-
-            if (leftSide === undefined && rightSide !== undefined) {
-                isInRightOrder = true;
-                break;
-            }
-
-            if (rightSide !== undefined && leftSide !== undefined && leftSide < rightSide) {
-                isInRightOrder = true;
-                break;
-            }
-
-            if (rightSide !== undefined && leftSide !== undefined && leftSide > rightSide) {
-                isInRightOrder = false;
-                break;
-            }
-        } else {
-            if (leftSide !== undefined && rightSide === undefined) {
-                isInRightOrder = false;
-                break;
-            }
-            if (typeof rightSide === 'object' && typeof leftSide === 'number') {
-                isInRightOrder = solvePair([[leftSide], rightSide]);
-            }
-            if (typeof leftSide === 'object' && typeof rightSide === 'number') {
-                isInRightOrder = solvePair([leftSide, [rightSide]]);
-            }
-            if (typeof leftSide === 'object' && typeof rightSide === 'object') {
-                isInRightOrder = solvePair([leftSide, rightSide]);
-            }
+        if (
+            typeof rightPacket[i] === 'number' &&
+            typeof leftPacket[i] === 'number' &&
+            rightPacket[i] !== leftPacket[i]
+        ) {
+            isInRightOrder = (leftPacket[i] || 0) < (rightPacket[i] || 0);
         }
+
+        if (typeof rightPacket[i] === 'object' && typeof leftPacket[i] === 'number') {
+            isInRightOrder = solvePair([[leftPacket[i]], rightPacket[i] as []]);
+        }
+
+        if (typeof leftPacket[i] === 'object' && typeof rightPacket[i] === 'number') {
+            isInRightOrder = solvePair([leftPacket[i] as [], [rightPacket[i]]]);
+        }
+
+        if (typeof leftPacket[i] === 'object' && typeof rightPacket[i] === 'object') {
+            isInRightOrder = solvePair([leftPacket[i] as [], rightPacket[i] as []]);
+        }
+
+        if (typeof isInRightOrder === 'boolean') return isInRightOrder;
+
+        if (i === leftPacket.length - 1) return true;
     }
-
-    return isInRightOrder;
 };
-
-export const getPacketValue = (data: Packet, index: number): number | undefined => {
-    // Arrays are objects in JS
-
-    if (typeof data[index] === 'object') return getPacketValue(data[index] as Packet, 0);
-
-    return data[index] as number | undefined;
-};
-
-export const solveForPair = (data: PacketPair) => {};
 
 export const partTwo = (data: string) => {
     console.log('Answer 2: __');
