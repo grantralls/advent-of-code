@@ -1,4 +1,4 @@
-import { partOne } from './utils';
+import { partOne, partTwo } from './utils';
 import { readFileSync } from 'fs';
 
 describe('examples/answers', () => {
@@ -14,5 +14,17 @@ describe('examples/answers', () => {
         const data = readFileSync('src/input.txt', 'utf-8');
         partOne(data);
         expect(consoleSpy).toHaveBeenCalledWith('Answer 1:', 5555);
+    });
+
+    it('should return 140 for the answer to the example for part two', () => {
+        const data = readFileSync('src/utils/example-input.txt', 'utf-8');
+        partTwo(data);
+        expect(consoleSpy).toHaveBeenCalledWith('Answer 2:', 140);
+    });
+
+    it('should return 22852 for the answer to part two', () => {
+        const data = readFileSync('src/input.txt', 'utf-8');
+        partTwo(data);
+        expect(consoleSpy).toHaveBeenCalledWith('Answer 2:', 22852);
     });
 });
