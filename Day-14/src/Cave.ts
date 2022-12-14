@@ -91,35 +91,34 @@ export class Cave {
         }
     };
 
-    // TODO: move this to a utils file
     private parseInput(input: string): RockFormation[] {
         const rocksListAsStrings = input.split('\n').map((cave) => cave.split(' -> '));
 
-        const rocksCoords: number[][][] = rocksListAsStrings.map((rockCoordListAsString) => {
-            const results = rockCoordListAsString.map((rockCoordAsString) => {
-                const results = rockCoordAsString.split(',').map((coord) => parseInt(coord));
-
+        const rocksCoords: Coordinate[][] = rocksListAsStrings.map((rockCoordListAsString) => {
+            const coordinates = rockCoordListAsString.map((rockCoordAsString) => {
+                const rockCoordAsArray = rockCoordAsString.split(',').map((coord) => parseInt(coord));
+                const rockLocation = { x: rockCoordAsArray[0], y: rockCoordAsArray[1] };
                 if (typeof this.smallestX === 'undefined') {
-                    this.smallestX = results[0];
-                } else if (results[0] < this.smallestX) {
-                    this.smallestX = results[0];
+                    this.smallestX = rockLocation.x;
+                } else if (rockLocation.x < this.smallestX) {
+                    this.smallestX = rockLocation.x;
                 }
 
                 if (typeof this.largestX === 'undefined') {
-                    this.largestX = results[0];
-                } else if (results[0] > this.largestX) {
-                    this.largestX = results[0];
+                    this.largestX = rockLocation.x;
+                } else if (rockLocation.x > this.largestX) {
+                    this.largestX = rockLocation.x;
                 }
 
                 if (typeof this.largestY === 'undefined') {
-                    this.largestY = results[1];
-                } else if (results[1] > this.largestY) {
-                    this.largestY = results[1];
+                    this.largestY = rockLocation.y;
+                } else if (rockLocation.y > this.largestY) {
+                    this.largestY = rockLocation.y;
                 }
 
-                return results;
+                return rockLocation;
             });
-            return results;
+            return coordinates;
         });
 
         if (!this.isPartOne) {
@@ -129,10 +128,10 @@ export class Cave {
         const cleanedCaveCoordsArray = rocksCoords.map((cave) => {
             return cave.map((coord) => ({
                 x:
-                    coord[0] -
+                    coord.x -
                     (this.smallestX as number) +
                     (!this.isPartOne ? Math.floor(((this.largestX as number) - Number(this.smallestX)) / 2) - 3 : 0),
-                y: coord[1],
+                y: coord.y,
             }));
         });
 
@@ -153,7 +152,6 @@ export class Cave {
         results.forEach((row) => console.log(row.join('')));
     }
 
-    // TODO: move this to a utils file
     private buildRockFormation(rockFormation: RockFormation) {
         if (this.cave.length === 0) {
             this.cave = Array.from(Array((this.largestY as number) + (!this.isPartOne ? 3 : 1)), () =>
