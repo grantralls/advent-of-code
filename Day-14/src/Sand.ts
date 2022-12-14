@@ -26,14 +26,24 @@ export class Sand extends Entity {
         return this.location;
     }
 
-    public canMove(entities: (Entity | undefined | null)[], maxY: number) {
-        if (this.location.x === 0 || this.location.y === maxY) {
-            throw new Error('void has taken the sand particle');
+    public canMove(entities: (Entity | undefined | null)[], maxY: number, isPartOne: boolean) {
+        if (isPartOne && this.location.x === 0) {
+            throw {
+                message: 'grain overflowed into void',
+                code: 'grain_overflowed_into_void',
+            };
         }
 
         const results = entities.findIndex((entity) => entity === null);
 
-        return results > -1;
+        if (results === -1 && this.location.y === 0) {
+            throw {
+                message: 'grain covered source',
+                code: 'grain_covered_source',
+            };
+        }
+
+        return isPartOne ? results > -1 : results > -1 && this.location.y !== maxY + 1;
     }
 
     public get getPreviousLocation() {

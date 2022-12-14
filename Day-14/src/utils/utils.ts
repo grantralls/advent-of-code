@@ -6,11 +6,12 @@ export const solution = (data: string) => {
 };
 
 export const partOne = (data: string) => {
-    const cave = new Cave(data);
+    const cave = new Cave(data, true);
     console.log('Answer 1:', cave.numberOfGrainsUntilOverflow());
-    cave.printCave();
 };
 
 export const partTwo = (data: string) => {
-    console.log('Answer 2: __');
+    const cave = new Cave(data, false);
+    const results = cave.numberOfGrainsUntilSourceCoverage();
+    console.log('Answer 2:', results);
 };

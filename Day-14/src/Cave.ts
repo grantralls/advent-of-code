@@ -4,6 +4,7 @@ import { Sand } from './Sand';
 
 type RockFormation = Coordinate[];
 
+// WARNING: This is some of the worst code I've ever written. I'm sorry. It passes the tests, but it's not pretty.
 export class Cave {
     private smallestX: number | undefined = undefined;
     private largestX: number | undefined = undefined;
@@ -11,8 +12,9 @@ export class Cave {
     private cave: (Entity | null)[][] = [];
     private sands: Sand[] = [];
     private sandsBeforeVoid: number | undefined = undefined;
+    private sandsBeforeSourceCoverage: number | undefined = undefined;
 
-    constructor(input: string) {
+    constructor(input: string, private isPartOne: boolean) {
         const rockFormations = this.parseInput(input);
 
         rockFormations.forEach((rockFormation) => {
@@ -20,6 +22,10 @@ export class Cave {
         });
     }
 
+    /**
+     * Add grains to the top of the cave. Simulate their physics and stop when the first grain overflows into the void.
+     * @returns The number of grains that were added to the cave before the first grain overflowed.
+     */
     public numberOfGrainsUntilOverflow() {
         try {
             while (true) {
@@ -35,14 +41,49 @@ export class Cave {
         return this.sandsBeforeVoid;
     }
 
+    /**
+     * Add grains to the top of the cave. Simulate their physics and stop when the the grain settles exactly where it started (the source).
+     * @returns The number of grains it took until a grain settled at the source.
+     */
+    public numberOfGrainsUntilSourceCoverage() {
+        try {
+            while (true) {
+                // Try to keep the cave centered along the x axis
+                const newSand = new Sand({
+                    x:
+                        500 -
+                        (this.smallestX as number) +
+                        Math.floor(((this.largestX as number) - Number(this.smallestX)) / 2) -
+                        3,
+                    y: 0,
+                });
+
+                newSand.didMove = () => this.updateCave.bind(this)(newSand);
+                this.sands.push(newSand);
+
+                this.simulateSand();
+            }
+        } catch (err) {
+            console.log(err);
+            this.sandsBeforeSourceCoverage = this.sands.length - 1;
+        }
+
+        return this.sandsBeforeSourceCoverage + 1;
+    }
+
+    /**
+     * Simulate the physics the grain of sand retrieved from the last item in the sands array.
+     */
     private simulateSand = () => {
         const latestSand = this.sands[this.sands.length - 1];
 
+        // The 3 entities below the sand from low-left, low-middle, and low-right.
         let lowerEntities = this.cave
             .slice(latestSand.getLocation.y + 1, latestSand.getLocation.y + 2)[0]
             .slice(latestSand.getLocation.x - 1, latestSand.getLocation.x + 2);
 
-        while (latestSand.canMove(lowerEntities, this.largestY as number)) {
+        // If the sand can move, move it and update the lower entities.
+        while (latestSand.canMove(lowerEntities, this.largestY as number, this.isPartOne)) {
             latestSand.move(lowerEntities);
             lowerEntities = this.cave
                 .slice(latestSand.getLocation.y + 1, latestSand.getLocation.y + 2)[0]
@@ -50,12 +91,13 @@ export class Cave {
         }
     };
 
+    // TODO: move this to a utils file
     private parseInput(input: string): RockFormation[] {
-        const caveArray = input.split('\n').map((cave) => cave.split(' -> '));
+        const rocksListAsStrings = input.split('\n').map((cave) => cave.split(' -> '));
 
-        const caveCoordsArray: number[][][] = caveArray.map((cave) => {
-            const results = cave.map((caveCoord) => {
-                const results = caveCoord.split(',').map((coord) => parseInt(coord));
+        const rocksCoords: number[][][] = rocksListAsStrings.map((rockCoordListAsString) => {
+            const results = rockCoordListAsString.map((rockCoordAsString) => {
+                const results = rockCoordAsString.split(',').map((coord) => parseInt(coord));
 
                 if (typeof this.smallestX === 'undefined') {
                     this.smallestX = results[0];
@@ -77,13 +119,19 @@ export class Cave {
 
                 return results;
             });
-
             return results;
         });
 
-        const cleanedCaveCoordsArray = caveCoordsArray.map((cave) => {
+        if (!this.isPartOne) {
+            this.largestX = (this.largestX as number) + 1000;
+        }
+
+        const cleanedCaveCoordsArray = rocksCoords.map((cave) => {
             return cave.map((coord) => ({
-                x: coord[0] - (this.smallestX as number),
+                x:
+                    coord[0] -
+                    (this.smallestX as number) +
+                    (!this.isPartOne ? Math.floor(((this.largestX as number) - Number(this.smallestX)) / 2) - 3 : 0),
                 y: coord[1],
             }));
         });
@@ -91,6 +139,9 @@ export class Cave {
         return cleanedCaveCoordsArray;
     }
 
+    /**
+     * The location saved within a sand grain is separated from the cave array. This method updates the cave array with the new location.
+     */
     private updateCave = (sand: Sand) => {
         this.cave[sand.getPreviousLocation.y][sand.getPreviousLocation.x] = null;
         this.cave[sand.getLocation.y][sand.getLocation.x] = sand;
@@ -102,9 +153,10 @@ export class Cave {
         results.forEach((row) => console.log(row.join('')));
     }
 
+    // TODO: move this to a utils file
     private buildRockFormation(rockFormation: RockFormation) {
         if (this.cave.length === 0) {
-            this.cave = Array.from(Array((this.largestY as number) + 1), () =>
+            this.cave = Array.from(Array((this.largestY as number) + (!this.isPartOne ? 3 : 1)), () =>
                 Array((this.largestX as number) - (this.smallestX as number) + 3).fill(null)
             );
         }
