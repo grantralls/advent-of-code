@@ -1,3 +1,5 @@
+import { Coverage } from './utils/types';
+
 export type Coordinate = {
     x: number;
     y: number;
@@ -8,55 +10,37 @@ export class Sensor {
     private location: Coordinate;
     private beaconLocation: Coordinate;
     private locationsWhereBeaconCantBeFound: number[] = [];
-    private desiredLocation: number;
-    private width: number;
+    private targetRow: number;
 
-    constructor(location: Coordinate, beaconLocation: Coordinate, desiredLocation: number, width: number) {
+    constructor(location: Coordinate, beaconLocation: Coordinate, targetRow: number) {
         this.location = location;
         this.beaconLocation = beaconLocation;
-        this.desiredLocation = desiredLocation;
-        this.width = width;
-    }
-
-    public isPointInSensor(point: Coordinate): boolean {
-        return false;
+        this.targetRow = targetRow;
     }
 
     public runSensor() {
-        this.setSize(
-            Math.abs(this.location.x - this.beaconLocation.x) + Math.abs(this.location.y - this.beaconLocation.y)
-        );
+        this.size =
+            Math.abs(this.location.x - this.beaconLocation.x) + Math.abs(this.location.y - this.beaconLocation.y);
 
-        if (this.location.y >= this.desiredLocation && this.location.y - this.size <= this.desiredLocation) {
-            const deltaY = this.location.y - this.desiredLocation;
-            const change = this.size - deltaY;
-            const positiveX = this.location.x + change;
-            const negativeX = this.location.x - change;
+        let deltaY: number = 0;
+        let change: number = 0;
 
-            this.locationsWhereBeaconCantBeFound.push(positiveX);
-
-            this.locationsWhereBeaconCantBeFound.push(negativeX);
-        } else if (this.location.y <= this.desiredLocation && this.location.y + this.size >= this.desiredLocation) {
-            const deltaY = this.desiredLocation - this.location.y;
-            const change = this.size - deltaY;
-            const positiveX = this.location.x + change;
-            const negativeX = this.location.x - change;
-
-            this.locationsWhereBeaconCantBeFound.push(positiveX);
-
-            this.locationsWhereBeaconCantBeFound.push(negativeX);
+        if (this.location.y >= this.targetRow && this.location.y - this.size <= this.targetRow) {
+            deltaY = this.location.y - this.targetRow;
+            change = this.size - deltaY;
+        } else if (this.location.y <= this.targetRow && this.location.y + this.size >= this.targetRow) {
+            deltaY = this.targetRow - this.location.y;
+            change = this.size - deltaY;
         }
+
+        const positiveX = this.location.x + change;
+        const negativeX = this.location.x - change;
+
+        this.locationsWhereBeaconCantBeFound.push(positiveX);
+        this.locationsWhereBeaconCantBeFound.push(negativeX);
     }
 
-    public get getLocation() {
-        return this.location;
-    }
-
-    public get getBeaconLocation() {
-        return this.beaconLocation;
-    }
-
-    public getLocationsWhereBeaconCantBeFound() {
+    public getLocationsWhereBeaconCantBeFound(): Coverage | undefined {
         if (this.locationsWhereBeaconCantBeFound.length === 0) {
             return;
         }
@@ -79,9 +63,5 @@ export class Sensor {
         }
 
         return { length, start: sortedLocations[0], end: sortedLocations[1] };
-    }
-
-    public setSize(newSize: number): void {
-        this.size = newSize;
     }
 }
